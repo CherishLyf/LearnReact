@@ -16,6 +16,20 @@ class CommentInput extends Component {
     }
   }
 
+  componentWillMount () {
+    this._loadUsername()
+  }
+
+  // 加载用户名
+  _loadUsername () {
+    const username = localStorage.getItem('username')
+    if (username) {
+      this.setState({
+        username
+      })
+    }
+  }
+
   componentDidMount () {
     this.textarea.focus()
   }
@@ -25,6 +39,14 @@ class CommentInput extends Component {
     this.setState({
       username: event.target.value
     })
+  }
+  // 改变用户名
+  _saveUsername (username) {
+    localStorage.setItem('username', username)
+  }
+  // 监听离开输入用户名框
+  handleUsernameBlur (event) {
+    this._saveUsername(event.target.value)
   }
   // 改变评论
   handleContentChange (event) {
@@ -49,6 +71,7 @@ class CommentInput extends Component {
           <div className='comment-field-input'>
             <input
               value={ this.state.username }
+              onBlur={ this.handleUsernameBlur.bind(this) }
               onChange={ this.handleUsernameChange.bind(this) } />
           </div>
         </div>
