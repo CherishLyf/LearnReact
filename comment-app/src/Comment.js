@@ -31,6 +31,16 @@ class Comment extends Component {
     }
   }
 
+  _getProcessedContent (content) {
+    return content
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;")
+      .replace(/`([\S\s]+?)`/g, '<code>$1</code>')
+  }
+
   _updateTimeString () {
     const comment = this.props.comment
     const duration = (+Date.now() - comment.createdTime) / 1000
@@ -43,12 +53,15 @@ class Comment extends Component {
   }
 
   render () {
+    const comment = this.props.comment
     return (
       <div className='comment'>
         <div className='comment-user'>
-          <span>{this.props.comment.username} </span>：
+          <span>{comment.username} </span>：
         </div>
-        <p>{this.props.comment.content}</p>
+        <p dangerouslySetInnerHTML={{
+            __html: this._getProcessedContent(comment.content)
+          }} />
         <span className='comment-createdtime'>
           {this.state.timeString}
         </span>
