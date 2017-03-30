@@ -3,7 +3,9 @@ import React, {Component, PropTypes} from 'react'
 class Comment extends Component {
 
   static propTypes = {
-    comment: PropTypes.object.isRequire
+    comment: PropTypes.object.isRequired,
+    onDeleteComment: PropTypes.func,
+    index: PropTypes.number
   }
 
   constructor () {
@@ -17,6 +19,16 @@ class Comment extends Component {
       this._updateTimeString.bind(this),
       5000
     )
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._timer)
+  }
+
+  handleDeleteComment () {
+    if (this.props.onDeleteComment) {
+      this.props.onDeleteComment(this.props.index)
+    }
   }
 
   _updateTimeString () {
@@ -39,6 +51,11 @@ class Comment extends Component {
         <p>{this.props.comment.content}</p>
         <span className='comment-createdtime'>
           {this.state.timeString}
+        </span>
+        <span
+          onClick={this.handleDeleteComment.bind(this)}
+          className="comment-delete">
+          删除
         </span>
       </div>
     )
