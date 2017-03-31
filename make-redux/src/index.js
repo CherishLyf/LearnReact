@@ -27,20 +27,30 @@ function renderContent (content) {
 }
 
 // 负责修改数据
-function dispatch (action) {
+function stateChanger (state, action) {
   switch (action.type) {
     case 'UPDATE_TITLE_TEXT':
-      appState.title.text = action.text
+      state.title.text = action.text
       break
     case 'UPDATE_TITLE_COLOR':
-      appState.title.color = action.color
+      state.title.color = action.color
       break
     default:
       break
   }
 }
 
-renderApp(appState)   // 首次渲染页面
-dispatch({type: 'UPDATE_TITLE_TEXT', text: '《React.js 小书》'})    // 修改标题文本
-dispatch({type: 'UPDATE_TITLE_COLOR', color: 'blue'})     // 修改标题颜色
-renderApp(appState)   // 把新的数据渲染到页面
+// 构建 store , state 表示应用状态的 state, stateChanger 表示 应用状态会根据 action 发生什么变化
+function createStore (state, stateChanger) {
+  const getState = () => state
+  const dispatch = (action) => stateChanger(state, action)
+  return { getState, dispatch }
+}
+
+// 创建应用 store
+const store = createStore(appState, stateChanger)
+
+renderApp(store.getState())   // 首次渲染页面
+store.dispatch({type: 'UPDATE_TITLE_TEXT', text: '《React.js 小书》'})    // 修改标题文本
+store.dispatch({type: 'UPDATE_TITLE_COLOR', color: 'blue'})     // 修改标题颜色
+renderApp(store.getState())   // 把新的数据渲染到页面
