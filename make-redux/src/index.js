@@ -42,15 +42,20 @@ function stateChanger (state, action) {
 
 // 构建 store , state 表示应用状态的 state, stateChanger 表示 应用状态会根据 action 发生什么变化
 function createStore (state, stateChanger) {
+  const listeners = []
+  const subscribe = (listener) => listeners.push(listener)    // 事件订阅
   const getState = () => state
-  const dispatch = (action) => stateChanger(state, action)
-  return { getState, dispatch }
+  const dispatch = (action) =>  {
+    stateChanger(state, action)
+    listeners.forEach((listener) => listener())
+  }
+  return { getState, dispatch, subscribe }
 }
 
 // 创建应用 store
 const store = createStore(appState, stateChanger)
+store.subscribe(() => renderApp(store.getState()))
 
 renderApp(store.getState())   // 首次渲染页面
 store.dispatch({type: 'UPDATE_TITLE_TEXT', text: '《React.js 小书》'})    // 修改标题文本
 store.dispatch({type: 'UPDATE_TITLE_COLOR', color: 'blue'})     // 修改标题颜色
-renderApp(store.getState())   // 把新的数据渲染到页面
