@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 
-export const connect = (mapStateToProps) => (WrappedComponet) => {
+export const connect = (mapStateToProps, mapDispatchToProps) => (WrappedComponet) => {
   class Connect extends Component {
     static contextTypes = {
       store: PropTypes.object
@@ -19,12 +19,12 @@ export const connect = (mapStateToProps) => (WrappedComponet) => {
 
     _updateProps () {
       const { store } = this.context
-      let stateProps = mapStateToProps(store.getState(), this.props) // 额外传入 props，让获取数据更加灵活方便
+      let stateProps = mapStateToProps ? mapStateToProps(store.getState, this.props) : {}     // 防止 mapStateToProps 没有传入
+      let dispatchProps = mapDispatchToProps ? mapDispatchToProps(store.dispatch, this.props) : {}  // 防止 mapDispatchToProps 传入
       this.setState({
-        allProps: {     // 整合普通的 props 和 从 state 生成 props
-          ...stateProps,
-          ...this.props
-        }
+        ...stateProps,
+        ...dispatchProps,
+        ...this.props
       })
     }
 
